@@ -27,5 +27,6 @@ pairs = find_pairs(repeats)
 print(pairs.items())
 print('{} repeated images found'.format(len(pairs.keys())))
 
+
 with open('repeats.pickle', 'wb') as handle:
     pickle.dump(pairs, handle, protocol=pickle.HIGHEST_PROTOCOL)
