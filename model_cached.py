@@ -104,7 +104,7 @@ with open('class_map.pickle', 'rb') as handle:
     class_map = pickle.load(handle)
 
 df = pd.read_csv('plankton.csv')
-df.drop_duplicates(subset='im_name', inplace=True)
+df.drop_duplicates(subset='im_name', inplace=True, keep=False)
 
 frames = []
 

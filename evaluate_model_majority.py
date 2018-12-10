@@ -16,13 +16,12 @@ with open('normalizer.pickle', 'rb') as handle:
 
 df = pd.read_csv('plankton.csv')
 df.drop_duplicates(subset='im_name', inplace=True)
-df = df[df.label != 36]
 
-model = load_model('./models/inception_v3_3k_gen_static_val.model')
+model = load_model('./models/inception_v3_3k.model')
 y_pred = []
 
 input_shape = (75, 75, 3)
-feat_shape = (23,)
+feat_shape = (16,)
 
 data_path = os.path.join(os.getcwd(), 'data')
 
@@ -46,12 +45,8 @@ for i, (im_name, label) in enumerate(zip(df.im_name, df.label)):
     votes = [np.argmax(y) for y in y_hat]
     counter = Counter(votes)
     y_hat, num = counter.most_common()[0]
-    if y_hat == 36 and len(counter) > 1:
-        y_hat, num = counter.most_common()[1]
-    elif y_hat == 36:
-        y_hat = np.random.randint(36)
     y_pred.append(y_hat)
 
 d = {'y_true': df.label, 'y_pred': y_pred}
 df_results = pd.DataFrame(data=d)
-df_results.to_csv('./model_results/3k_gen_majority', index=False)
+df_results.to_csv('./model_results/inception_v3_majority', index=False)

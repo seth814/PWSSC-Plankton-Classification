@@ -8,6 +8,7 @@ from keras.models import load_model
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 import seaborn as sns
 import cv2
+from custom_metrics import f1
 
 def drop_classes(df, labels, class_map):
 
@@ -28,28 +29,30 @@ def drop_classes(df, labels, class_map):
 
     return df, new_class_map
 
-def eval_model(model):
+def eval_model(model, prob_threshold=0.95):
     y_pred = []
     for i in range(X_img.shape[0]):
+        encoded = np.zeros(shape=(1,len(class_map)))
         x_img = X_img[i].reshape(1, input_shape[0], input_shape[1], input_shape[2])
         x_feat = X_feat[i].reshape(1, feat_shape[0])
         y_hat = model.predict([x_img, x_feat])
-        y_pred.append(np.argmax(y_hat))
+        for i, y in enumerate(y_hat.flatten()):
+            encoded[0][i] = 1 if y > prob_threshold else 0
+        y_pred.append(encoded)
+        print(encoded)
     return y_pred
 
-with open('class_map.pickle', 'rb') as handle:
+with open('class_map_multi.pickle', 'rb') as handle:
     class_map = pickle.load(handle)
 
 with open('normalizer.pickle', 'rb') as handle:
     mms = pickle.load(handle)
 
-with open('features.pickle', 'rb') as handle:
+with open('features_multi.pickle', 'rb') as handle:
     features = pickle.load(handle)
 
-df = pd.read_csv('plankton.csv')
+df = pd.read_csv('plankton_multi.csv')
 df.drop_duplicates(subset='im_name', inplace=True, keep=False)
-
-# df, class_map = drop_classes(df, labels=[9, 10, 29, 36], class_map=class_map)
 
 input_shape = (75, 75, 3)
 feat_shape = (16,)
@@ -57,7 +60,7 @@ feat_shape = (16,)
 X_img = np.empty((df.shape[0], input_shape[0], input_shape[1], input_shape[2]), dtype=np.uint8)
 X_feat = np.empty((df.shape[0], feat_shape[0]))
 
-data_path = os.path.join(os.getcwd(), 'padded')
+data_path = os.path.join(os.getcwd(), 'multi_padded')
 
 for i, (im_name, label) in enumerate(zip(df.im_name, df.label)):
     im_dir = os.path.join(data_path, class_map[label])
@@ -72,12 +75,14 @@ X_feat = mms.transform(X_feat)
 
 X = [X_img, X_feat]
 
-model = load_model('./models/inception_v3.model')
+model = load_model('./models/inception_v3_multi.model', custom_objects={'f1': f1})
 y_pred = eval_model(model)
 
+
+'''
 d = {'y_true': df.label, 'y_pred': y_pred}
 df_results = pd.DataFrame(data=d)
-df_results.to_csv('./model_results/inception_v3.csv', index=False)
+df_results.to_csv('./model_results/inception_v3_drop_4.csv', index=False)
 
 acc = str(round(accuracy_score(df.label, y_pred), 4))
 f1 = str(round(f1_score(df.label, y_pred, average='weighted'), 4))
@@ -92,3 +97,4 @@ plt.show()
 
 print('Accuracy: {}'.format(acc))
 print('F1 Score: {}'.format(f1))
+'''

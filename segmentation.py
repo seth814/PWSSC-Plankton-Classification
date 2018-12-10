@@ -56,9 +56,9 @@ class Segmentation(object):
         bounds = (x_min, x_max, y_min, y_max)
 
         #build features based on segmentation
-        self.features.append(x_max-x_min)
-        self.features.append(y_max-y_min)
-        self.features.append(cv2.contourArea(top_contour))
+        self.features.append(np.log(x_max-x_min))
+        self.features.append(np.log(y_max-y_min))
+        self.features.append(np.log(cv2.contourArea(top_contour)))
         #self.features.extend([m for m in M.values()])
 
         #draw segmentation on copy of image
@@ -70,20 +70,16 @@ class Segmentation(object):
 
         #crop to contour -> resize with aspect -> pad to target_shape
         cropped = self.crop_to_contour(np.array(self.im.copy()), bounds)
-        cropped_mask = self.crop_to_contour(np.array(self.mask.copy()), bounds)
+        # cropped_mask = self.crop_to_contour(np.array(self.mask.copy()), bounds)
         #calculate hu moments on cropped mask
-        hu_moments = cv2.HuMoments(cv2.moments(cropped_mask)).flatten()
-        self.features.extend([hu for hu in hu_moments])
+        # hu_moments = cv2.HuMoments(cv2.moments(cropped_mask)).flatten()
+        # self.features.extend([hu for hu in hu_moments])
         #compute mahotas features on cropped segmentation
         gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
         textures = mt.features.haralick(gray)
         ht_mean = textures.mean(axis=0)
         self.features.extend([h for h in ht_mean])
-        lbp = mt.features.lbp(gray, radius=5, points=8)
-        self.features.extend([l for l in lbp])
-        pftas = mt.features.pftas(gray)
-        self.features.extend([t for t in pftas])
-        self.build_column_labels((hu_moments, ht_mean, lbp, pftas))
+        self.build_column_labels((ht_mean,))
         #pad cropped to target_shape
         self.padded = self.resize_image(cropped)
 
@@ -165,7 +161,7 @@ class Segmentation(object):
         This allows user to change feature settings and dynamically build correct feature size.
         '''
         columns = ['x_length', 'y_length', 'area']
-        iter_labels = ['hu_', 'haralick_', 'lbp_', 'tas_']
+        iter_labels = ['haralick_']
         for i, label in enumerate(iter_labels):
             unpack = [u for u in iterable[i]]
             for z, feat in enumerate(unpack):
