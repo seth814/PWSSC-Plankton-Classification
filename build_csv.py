@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-from glob import glob
 import numpy as np
 import pickle
 
@@ -19,8 +18,7 @@ mod_labels = {'acartia': [0, 9],
 class_map = {}
 im_names = []
 labels = []
-cwd = os.getcwd()
-train_path = os.path.join(cwd, 'multi_padded')
+train_path = os.path.join(os.getcwd(), 'multi_padded')
 classes = os.listdir(train_path)
 for i, c in enumerate(classes):
     class_map[i] = c
@@ -29,15 +27,13 @@ for i, c in enumerate(classes):
     else:
         i = np.array(i, dtype=int)
     class_dir = os.path.join(train_path, c)
-    os.chdir(class_dir)
-    images = glob('*.png')
+    images = os.listdir(class_dir)
     for im in images:
         im_names.append(im)
         labels.append(i)
 
 d = {'im_name': im_names, 'label': labels}
 df = pd.DataFrame(data=d)
-os.chdir(cwd)
 
 df.to_csv('plankton_multi.csv', index=False)
 

@@ -171,6 +171,6 @@ vg = DataGenerator(paths=X_val, labels=y_val, **params)
 model = get_single_cls_model()
 
 model.fit_generator(generator=tg, validation_data=vg,
-                    steps_per_epoch=len(tg), validation_steps=len(vg),
+                    steps_per_epoch=len(tg)/10, validation_steps=len(vg)/10,
                     epochs=100, verbose=1,
                     callbacks=[tensorboard, checkpoint])

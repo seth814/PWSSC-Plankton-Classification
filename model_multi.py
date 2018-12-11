@@ -12,7 +12,6 @@ from keras.optimizers import Adam
 from keras.callbacks import TensorBoard, ModelCheckpoint, ReduceLROnPlateau
 import pickle
 from custom_metrics import f1
-from glob import glob
 import re
 
 n_classes = 33
@@ -106,14 +105,12 @@ paths = []
 labels = []
 data_path = os.path.join(os.getcwd(), 'multi_padded')
 classes = os.listdir(data_path)
-cwd = os.getcwd()
 
 hash = dict(zip(df.im_name, df.label.values))
 
 for c in classes:
     im_dir = os.path.join(data_path, c)
-    os.chdir(im_dir)
-    images = glob('*.png')
+    images = os.listdir(im_dir)
     images = np.array([i for i in images if i in hash.keys()])
     images = np.random.choice(images, size=5000, replace=True)
     for im_name in images:
@@ -121,7 +118,6 @@ for c in classes:
         paths.append(im_path)
         labels.append(encode_labels(hash[im_name]))
 
-os.chdir(cwd)
 
 paths = np.array(paths)
 labels = np.array(labels)
