@@ -102,15 +102,16 @@ def get_multi_cls_model():
     model.summary()
     return model
 
+def check_dirs(dirs):
+    for d in dirs:
+        exists = os.path.join(os.getcwd(), d)
+        if os.path.isdir(exists) is False:
+            os.mkdir(exists)
+
+check_dirs(['logs', 'models'])
+
 with open('class_map.pickle', 'rb') as handle:
     class_map = pickle.load(handle)
-
-exists = os.path.join(os.getcwd(), 'logs')
-if os.path.isdir(exists) is False:
-    os.mkdir(exists)
-exists = os.path.join(os.getcwd(), 'models')
-if os.path.isdir(exists) is False:
-    os.mkdir(exists)
 
 df = pd.read_csv('plankton.csv')
 df.drop_duplicates(subset='im_name', inplace=True, keep=False)

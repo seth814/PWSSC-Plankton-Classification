@@ -85,25 +85,30 @@ def encode_labels(labels):
 
     return encoded
 
+def check_dirs(dirs):
+    for d in dirs:
+        exists = os.path.join(os.getcwd(), d)
+        if os.path.isdir(exists) is False:
+            os.mkdir(exists)
 
-with open('class_map_multi.pickle', 'rb') as handle:
+check_dirs(['logs', 'models'])
+
+with open('class_map.pickle', 'rb') as handle:
     class_map = pickle.load(handle)
 print(class_map)
 
-df = pd.read_csv('plankton_multi.csv')
+df = pd.read_csv('plankton.csv')
 df.drop_duplicates(subset='im_name', inplace=True, keep=False)
 
 params = {'n_classes': n_classes,
           'shape': input_shape,
           'feat_shape': feat_shape,
           'batch_size': 64,
-          'shuffle': True,
-          'multi': True,
-          }
+          'shuffle': True}
 
 paths = []
 labels = []
-data_path = os.path.join(os.getcwd(), 'multi_padded')
+data_path = os.path.join(os.getcwd(), 'pad')
 classes = os.listdir(data_path)
 
 hash = dict(zip(df.im_name, df.label.values))
