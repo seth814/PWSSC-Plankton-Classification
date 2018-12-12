@@ -125,7 +125,7 @@ df_sample = pd.concat(frames)
 
 paths = []
 labels = []
-data_path = os.path.join(os.getcwd(), 'padded')
+data_path = os.path.join(os.getcwd(), 'pad')
 
 for im_name, label in zip(df_sample.im_name, df_sample.label):
     im_dir = os.path.join(data_path, class_map[label])
