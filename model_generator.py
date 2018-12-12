@@ -12,7 +12,6 @@ from data_generator import DataGenerator
 from keras.optimizers import Adam
 from keras.callbacks import TensorBoard, ModelCheckpoint, ReduceLROnPlateau
 import pickle
-from custom_metrics import f1, f1_loss
 
 n_classes = 37
 input_shape = (75, 75, 3)
@@ -73,32 +72,6 @@ def get_single_cls_model():
     model.compile(loss='categorical_crossentropy',
                   optimizer=Adam(1e-3),
                   metrics=['acc'])
-    model.summary()
-    return model
-
-def get_multi_cls_model():
-
-    pretrain_model = InceptionV3(
-        include_top=False,
-        weights=None,
-        input_shape=input_shape)
-
-    input_image = Input(shape=input_shape)
-    x = pretrain_model(input_image)
-    x = GlobalAveragePooling2D()(x)
-    x = Dropout(0.5)(x)
-
-    x = Dense(256, activation='relu')(x)
-    c1 = Dense(128-feat_shape[0], activation='relu')(x)
-    c2 = Input(shape=feat_shape)
-    c = Concatenate(axis=-1,)([c1, c2])
-    x = Dense(64, activation='relu')(c)
-    output = Dense(n_classes, activation='sigmoid')(x)
-
-    model = Model([input_image, c2], output)
-    model.compile(loss='binary_crossentropy',
-                  optimizer=Adam(1e-3),
-                  metrics=['acc', f1, f1_loss])
     model.summary()
     return model
 

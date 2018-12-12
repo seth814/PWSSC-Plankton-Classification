@@ -5,17 +5,9 @@ import pickle
 
 # uncomment mod_labels to build multi classification
 mod_labels = {}
-
 '''
-mod_labels = {'acartia': [0, 9],
-              'calanus': [5, 9],
-              'metridia': [17, 9],
-              'neocalanus': [19, 9],
-              'oithona': [21, 9],
-              'pseudocalanus': [27, 9]
-              }
+mod_labels = {'acartia': [0, 9]}
 '''
-
 class_map = {}
 im_names = []
 labels = []
@@ -35,6 +27,8 @@ for i, c in enumerate(classes):
     for im in images:
         im_names.append(im)
         labels.append(i)
+
+print(class_map)
 
 d = {'im_name': im_names, 'label': labels}
 df = pd.DataFrame(data=d)
