@@ -105,6 +105,10 @@ def get_multi_cls_model():
 with open('class_map.pickle', 'rb') as handle:
     class_map = pickle.load(handle)
 
+exists = os.path.join(os.getcwd(), 'logs')
+if os.path.isdir(exists) is False:
+    os.mkdir(exists)
+
 df = pd.read_csv('plankton.csv')
 df.drop_duplicates(subset='im_name', inplace=True, keep=False)
 
