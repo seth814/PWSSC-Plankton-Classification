@@ -14,7 +14,7 @@ import pickle
 from custom_metrics import f1
 import re
 
-n_classes = 33
+n_classes = 37
 input_shape = (75, 75, 3)
 feat_shape = (16,)
 
