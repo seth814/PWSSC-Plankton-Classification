@@ -4,7 +4,6 @@ import pickle
 import cv2
 from sklearn.preprocessing import MinMaxScaler
 from segmentation import Segmentation
-from glob import glob
 
 '''
 This file will iterate through every image in the data directory.
@@ -31,7 +30,7 @@ feats = {}
 feat_list = []
 
 data_path = os.path.join(os.getcwd(), 'data')
-pad_path = os.path.join(os.getcwd(), 'padded')
+pad_path = os.path.join(os.getcwd(), 'pad')
 classes = os.listdir(data_path)
 
 for c in classes:
@@ -39,8 +38,7 @@ for c in classes:
     exists = os.path.join(pad_path, c)
     if os.path.isdir(exists) is False:
         os.mkdir(exists)
-    os.chdir(im_dir)
-    images = glob('*.png')
+    images = os.listdir(im_dir)
     for im_name in images:
         im_path = os.path.join(im_dir, im_name)
         im_pad_path = os.path.join(exists, im_name)

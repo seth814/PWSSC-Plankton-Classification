@@ -102,26 +102,6 @@ def get_multi_cls_model():
     model.summary()
     return model
 
-def drop_classes(df, labels, class_map):
-
-    print(df.shape)
-    for i in labels:
-        print('Dropping {}'.format(class_map[i]))
-        df = df[df.label != i]
-        class_map.pop(i)
-    print(df.shape)
-
-    new_class_map = {}
-    for current, new in zip(np.unique(df.label), range(len(class_map))):
-        df.loc[df.label == current, 'label'] = new
-        new_class_map[new] = class_map[current]
-
-    with open('dropped_4_class_map.pickle', 'wb') as handle:
-        pickle.dump(new_class_map, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    return df, new_class_map
-
-
 with open('class_map.pickle', 'rb') as handle:
     class_map = pickle.load(handle)
 
@@ -132,10 +112,7 @@ params = {'n_classes': n_classes,
           'shape': input_shape,
           'feat_shape': feat_shape,
           'batch_size': 64,
-          'shuffle': True,
-          'multi': False}
-
-# df, class_map = drop_classes(df, labels=[9, 10, 29, 36], class_map=class_map)
+          'shuffle': True}
 
 frames = []
 for c in np.unique(df.label):

@@ -12,13 +12,16 @@ import pickle
 import cv2
 import os
 
+with open('features.pickle', 'rb') as handle:
+    features = pickle.load(handle)
+
 with open('normalizer.pickle', 'rb') as handle:
     mms = pickle.load(handle)
 
 class DataGenerator(keras.utils.Sequence):
     'Generates data for Keras'
     def __init__(self, paths, labels, n_classes, batch_size=128, shape=(75,75,3),
-                 feat_shape=(16,), shuffle=True, augment=False, multi=False):
+                 feat_shape=(16,), shuffle=True, augment=False):
         'Initialization'
         self.shape = shape
         self.batch_size = batch_size
@@ -30,12 +33,6 @@ class DataGenerator(keras.utils.Sequence):
         self.augment = augment
         if augment:
             self.seq = seq
-        if multi:
-            with open('features_multi.pickle', 'rb') as handle:
-                self.features = pickle.load(handle)
-        else:
-            with open('features.pickle', 'rb') as handle:
-                self.features = pickle.load(handle)
         self.on_epoch_end()
 
     def __len__(self):
@@ -75,7 +72,7 @@ class DataGenerator(keras.utils.Sequence):
             else:
                 X_img[i,] = preprocess_input(padded)
             _, im_name = os.path.split(path)
-            X_feat[i,] = self.features[im_name]
+            X_feat[i,] = features[im_name]
             y[i,] = label
 
         X_feat = mms.transform(X_feat)
