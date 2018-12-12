@@ -64,7 +64,7 @@ def get_multi_cls_model():
     x = Dropout(0.5)(x)
 
     x = Dense(256, activation='relu')(x)
-    c1 = Dense(128, activation='relu')(x)
+    c1 = Dense(128-feat_shape[0], activation='relu')(x)
     c2 = Input(shape=feat_shape)
     c = Concatenate(axis=-1,)([c1, c2])
     x = Dense(64, activation='relu')(c)
