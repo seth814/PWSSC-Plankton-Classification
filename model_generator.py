@@ -108,6 +108,9 @@ with open('class_map.pickle', 'rb') as handle:
 exists = os.path.join(os.getcwd(), 'logs')
 if os.path.isdir(exists) is False:
     os.mkdir(exists)
+exists = os.path.join(os.getcwd(), 'models')
+if os.path.isdir(exists) is False:
+    os.mkdir(exists)
 
 df = pd.read_csv('plankton.csv')
 df.drop_duplicates(subset='im_name', inplace=True, keep=False)
