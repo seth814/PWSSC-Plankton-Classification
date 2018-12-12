@@ -20,6 +20,9 @@ class_map = {}
 im_names = []
 labels = []
 train_path = os.path.join(os.getcwd(), 'data')
+exists = os.path.join(os.getcwd(), 'pad')
+if os.path.isdir(exists) is False:
+    os.mkdir(exists)
 classes = os.listdir(train_path)
 for i, c in enumerate(classes):
     class_map[i] = c
