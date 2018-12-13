@@ -9,25 +9,6 @@ from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 import seaborn as sns
 import cv2
 
-def drop_classes(df, labels, class_map):
-
-    print(df.shape)
-    for i in labels:
-        print('Dropping {}'.format(class_map[i]))
-        df = df[df.label != i]
-        class_map.pop(i)
-    print(df.shape)
-
-    new_class_map = {}
-    for current, new in zip(np.unique(df.label), range(len(class_map))):
-        df.loc[df.label == current, 'label'] = new
-        new_class_map[new] = class_map[current]
-
-    with open('dropped_4_class_map.pickle', 'wb') as handle:
-        pickle.dump(new_class_map, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    return df, new_class_map
-
 def eval_model(model):
     y_pred = []
     for i in range(X_img.shape[0]):
@@ -49,15 +30,13 @@ with open('features.pickle', 'rb') as handle:
 df = pd.read_csv('plankton.csv')
 df.drop_duplicates(subset='im_name', inplace=True, keep=False)
 
-# df, class_map = drop_classes(df, labels=[9, 10, 29, 36], class_map=class_map)
-
 input_shape = (75, 75, 3)
 feat_shape = (16,)
 
 X_img = np.empty((df.shape[0], input_shape[0], input_shape[1], input_shape[2]), dtype=np.uint8)
 X_feat = np.empty((df.shape[0], feat_shape[0]))
 
-data_path = os.path.join(os.getcwd(), 'padded')
+data_path = os.path.join(os.getcwd(), 'pad')
 
 for i, (im_name, label) in enumerate(zip(df.im_name, df.label)):
     im_dir = os.path.join(data_path, class_map[label])

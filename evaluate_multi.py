@@ -18,16 +18,16 @@ def eval_model(model, prob_threshold=0.95):
     return np.array(y_pred)
 
 
-with open('class_map_multi.pickle', 'rb') as handle:
+with open('class_map.pickle', 'rb') as handle:
     class_map = pickle.load(handle)
 
 with open('normalizer.pickle', 'rb') as handle:
     mms = pickle.load(handle)
 
-with open('features_multi.pickle', 'rb') as handle:
+with open('features.pickle', 'rb') as handle:
     features = pickle.load(handle)
 
-df = pd.read_csv('plankton_multi.csv')
+df = pd.read_csv('plankton.csv')
 df.drop_duplicates(subset='im_name', inplace=True, keep=False)
 
 input_shape = (75, 75, 3)
@@ -37,7 +37,7 @@ X_img = np.empty((df.shape[0], input_shape[0], input_shape[1], input_shape[2]), 
 X_feat = np.empty((df.shape[0], feat_shape[0]))
 y = []
 
-data_path = os.path.join(os.getcwd(), 'multi_padded')
+data_path = os.path.join(os.getcwd(), 'pad')
 classes = os.listdir(data_path)
 
 hash = dict(zip(df.im_name, df.label.values))
@@ -66,8 +66,7 @@ model = load_model('./models/inception_v3_multi.model', custom_objects={'f1': f1
 y_pred = eval_model(model)
 print(y_pred.shape, y.shape)
 
-X_prob = np.concatenate((X, y), axis=1)
-df_result = pd.DataFrame(X_prob)
+df_result = pd.DataFrame(y_pred)
 df_result.to_csv('./model_results/multi_prob.csv', index=False)
 
 tsne = TSNE(n_components=2)
