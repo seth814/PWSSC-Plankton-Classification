@@ -117,7 +117,7 @@ for c in classes:
     im_dir = os.path.join(data_path, c)
     images = os.listdir(im_dir)
     images = np.array([i for i in images if i in hash.keys()])
-    images = np.random.choice(images, size=5000, replace=True)
+    images = np.random.choice(images, size=3000, replace=True)
     for im_name in images:
         im_path = os.path.join(im_dir, im_name)
         paths.append(im_path)
