@@ -1,5 +1,5 @@
 from keras.applications import InceptionV3
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.layers import Input, Dropout, Dense
 from keras.layers import GlobalAveragePooling2D, Concatenate
 from keras.utils import to_categorical
@@ -13,7 +13,7 @@ from keras.optimizers import Adam
 from keras.callbacks import TensorBoard, ModelCheckpoint, ReduceLROnPlateau
 import pickle
 
-n_classes = 37
+n_classes = 34
 input_shape = (75, 75, 3)
 feat_shape = (16,)
 
@@ -92,12 +92,12 @@ df.drop_duplicates(subset='im_name', inplace=True, keep=False)
 params = {'n_classes': n_classes,
           'shape': input_shape,
           'feat_shape': feat_shape,
-          'batch_size': 64,
+          'batch_size': 128,
           'shuffle': True}
 
 frames = []
 for c in np.unique(df.label):
-    frames.append(df[df.label==c].sample(n=3000, replace=True, random_state=0))
+    frames.append(df[df.label==c].sample(n=5000, replace=True, random_state=0))
 df_sample = pd.concat(frames)
 
 paths = []
@@ -115,7 +115,7 @@ labels = np.array(labels)
 
 X_train, X_val, y_train, y_val = train_test_split(paths, labels, test_size=0.05, random_state=0)
 
-checkpoint = ModelCheckpoint('./models/test.model', monitor='val_acc', verbose=1, mode='max',
+checkpoint = ModelCheckpoint('./models/inception_v3.model', monitor='val_acc', verbose=1, mode='max',
                              save_best_only=True, save_weights_only=False, period=1)
 
 reduceLROnPlato = ReduceLROnPlateau(monitor='val_loss', factor=0.5,
@@ -126,9 +126,10 @@ tensorboard = TrainValTensorBoard(write_graph=False)
 tg = DataGenerator(paths=X_train, labels=y_train, augment=True, **params)
 vg = DataGenerator(paths=X_val, labels=y_val, **params)
 
-model = get_single_cls_model()
+#model = get_single_cls_model()
+model = load_model('./models/inception_v3.model')
 
 model.fit_generator(generator=tg, validation_data=vg,
                     steps_per_epoch=len(tg)/10, validation_steps=len(vg)/10,
-                    epochs=100, verbose=1,
+                    epochs=1000, verbose=1,
                     callbacks=[tensorboard, checkpoint])
