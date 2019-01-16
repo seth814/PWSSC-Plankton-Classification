@@ -6,11 +6,16 @@ You only need to change __data_generation method to navigate where images are st
 
 import numpy as np
 import keras
-from keras.applications.inception_v3 import preprocess_input
 from augment import seq
 import pickle
-import cv2
 import os
+from PIL import Image
+
+def preprocess_input(x):
+    x /= 255.
+    x -= 0.5
+    x *= 2.
+    return x
 
 with open('features.pickle', 'rb') as handle:
     features = pickle.load(handle)
@@ -59,18 +64,18 @@ class DataGenerator(keras.utils.Sequence):
 
     def __data_generation(self, paths, labels):
 
-        X_img = np.empty((self.batch_size, self.shape[0], self.shape[1], self.shape[2]), dtype=np.uint8)
+        X_img = np.empty((self.batch_size, self.shape[0], self.shape[1], self.shape[2]), dtype=np.float32)
         X_feat = np.empty((self.batch_size, self.feat_shape[0]))
         y = np.empty((self.batch_size, self.n_classes), dtype=int)
 
         for i, (path, label) in enumerate(zip(paths, labels)):
-            padded = cv2.imread(path, -1)
-            padded = cv2.cvtColor(padded, cv2.COLOR_BGR2RGB)
+            padded = Image.open(path)
+            padded = np.array(padded, dtype=np.uint8)
             if self.augment:
                 aug = self.seq.augment_image(padded)
-                X_img[i,] = preprocess_input(aug)
+                X_img[i,] = preprocess_input(np.array(aug, dtype=np.float32))
             else:
-                X_img[i,] = preprocess_input(padded)
+                X_img[i,] = preprocess_input(np.array(padded, dtype=np.float32))
             _, im_name = os.path.split(path)
             X_feat[i,] = features[im_name]
             y[i,] = label

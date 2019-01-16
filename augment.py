@@ -1,13 +1,12 @@
 from imgaug import augmenters as iaa
 import imgaug as ia
 
+#augmenter expects an image in uint8 format
+
 ia.seed(1)
 
 seq = iaa.Sequential([
     iaa.Fliplr(0.5),
-    iaa.Sometimes(0.5,
-    iaa.GaussianBlur(sigma=(0, 0.2))),
-    iaa.Multiply((0.6, 1.4)),
     iaa.Affine(
         scale={"x": (0.8, 1.2), "y": (0.8, 1.2)},
         rotate=(-90, 90),

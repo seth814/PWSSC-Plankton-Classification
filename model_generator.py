@@ -60,9 +60,8 @@ def get_single_cls_model():
     x = pretrain_model(input_image)
     x = GlobalAveragePooling2D()(x)
     x = Dropout(0.5)(x)
-
-    x = Dense(256, activation='relu')(x)
-    c1 = Dense(128-feat_shape[0], activation='relu')(x)
+    x = Dense(512)(x)
+    c1 = Dense(256-feat_shape[0], activation='relu')(x)
     c2 = Input(shape=feat_shape)
     c = Concatenate(axis=-1,)([c1, c2])
     x = Dense(64, activation='relu')(c)
@@ -126,10 +125,10 @@ tensorboard = TrainValTensorBoard(write_graph=False)
 tg = DataGenerator(paths=X_train, labels=y_train, augment=True, **params)
 vg = DataGenerator(paths=X_val, labels=y_val, **params)
 
-#model = get_single_cls_model()
-model = load_model('./models/inception_v3.model')
+model = get_single_cls_model()
+#model = load_model('./models/inception_v3.model')
 
 model.fit_generator(generator=tg, validation_data=vg,
-                    steps_per_epoch=len(tg)/10, validation_steps=len(vg)/10,
+                    steps_per_epoch=len(tg)/10, validation_steps=len(vg),
                     epochs=1000, verbose=1,
                     callbacks=[tensorboard, checkpoint])

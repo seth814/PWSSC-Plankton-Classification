@@ -1,7 +1,6 @@
 import os
 import pickle
 from keras.models import load_model
-from keras.applications.inception_v3 import preprocess_input
 from pathlib import Path
 from segmentation import Segmentation
 from tqdm import tqdm
@@ -9,13 +8,19 @@ import numpy as np
 import pandas as pd
 from shutil import copy
 
+def preprocess_input(x):
+    x /= 255.
+    x -= 0.5
+    x *= 2.
+    return x
+
 def predict_image(im_path):
     plankton = Segmentation(im_path, target_shape=(75, 75, 3))
     plankton.segment()
     padded = plankton.get_padded()
     feat = plankton.get_features()
     feat = np.array(feat)
-    padded = preprocess_input(padded)
+    padded = preprocess_input(np.array(padded, dtype=np.float32))
     x_img = padded.reshape(1, padded.shape[0], padded.shape[1], padded.shape[2])
     x_feat = feat.reshape(1, feat.shape[0])
     x_feat = mms.transform(x_feat)
