@@ -14,7 +14,7 @@ import pickle
 from custom_metrics import f1
 import re
 
-n_classes = 37
+n_classes = 34
 input_shape = (75, 75, 3)
 feat_shape = (16,)
 
@@ -103,7 +103,7 @@ df.drop_duplicates(subset='im_name', inplace=True, keep=False)
 params = {'n_classes': n_classes,
           'shape': input_shape,
           'feat_shape': feat_shape,
-          'batch_size': 64,
+          'batch_size': 128,
           'shuffle': True}
 
 paths = []
@@ -117,7 +117,7 @@ for c in classes:
     im_dir = os.path.join(data_path, c)
     images = os.listdir(im_dir)
     images = np.array([i for i in images if i in hash.keys()])
-    images = np.random.choice(images, size=3000, replace=True)
+    images = np.random.choice(images, size=5000, replace=True)
     for im_name in images:
         im_path = os.path.join(im_dir, im_name)
         paths.append(im_path)
@@ -143,6 +143,6 @@ vg = DataGenerator(paths=X_val, labels=y_val, **params)
 model = get_multi_cls_model()
 
 model.fit_generator(generator=tg, validation_data=vg,
-                    steps_per_epoch=len(tg)/10, validation_steps=len(vg)/10,
+                    steps_per_epoch=len(tg)/10, validation_steps=len(vg),
                     epochs=1000, verbose=1,
                     callbacks=[tensorboard, checkpoint])

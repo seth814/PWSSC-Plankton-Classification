@@ -1,14 +1,19 @@
 import pandas as pd
 import pickle
-from keras.applications.inception_v3 import preprocess_input
 import numpy as np
 import os
 from keras.models import load_model
-import cv2
 from custom_metrics import f1
 from sklearn.manifold import TSNE
 import re
 from sklearn.metrics import f1_score
+from PIL import Image
+
+def preprocess_input(x):
+    x /= 255.
+    x -= 0.5
+    x *= 2.
+    return x
 
 def eval_model(model, prob_threshold=0.95):
     y_probs = []
@@ -58,11 +63,11 @@ df = pd.read_csv('plankton.csv')
 df.drop_duplicates(subset='im_name', inplace=True, keep=False)
 df.reset_index(inplace=True)
 
-n_classes = 37
+n_classes = 34
 input_shape = (75, 75, 3)
 feat_shape = (16,)
 
-X_img = np.empty((df.shape[0], input_shape[0], input_shape[1], input_shape[2]), dtype=np.uint8)
+X_img = np.empty((df.shape[0], input_shape[0], input_shape[1], input_shape[2]), dtype=np.float32)
 X_feat = np.empty((df.shape[0], feat_shape[0]))
 y = []
 y_hot = []
@@ -79,9 +84,9 @@ for z, c in enumerate(classes):
     images = np.array([i for i in images if i in hash.keys()])
     for im in images:
         im_path = os.path.join(im_dir, im)
-        padded = cv2.imread(im_path, -1)
-        padded = cv2.cvtColor(padded, cv2.COLOR_BGR2RGB)
-        X_img[i,] = preprocess_input(padded)
+        padded = Image.open(im_path)
+        padded = np.array(padded, dtype=np.uint8)
+        X_img[i,] = preprocess_input(np.array(padded, dtype=np.float32))
         _, im_name = os.path.split(im_path)
         X_feat[i,] = features[im_name]
         y.append(z)
@@ -110,8 +115,10 @@ df_result.to_csv('./model_results/test_prob.csv', index=False)
 
 # performs tsne decomposition (warning: tsne compares elements quadratically)
 # comment out if data is too large
+'''
 tsne = TSNE(n_components=2)
 X = tsne.fit_transform(y_prob)
 X = np.concatenate((X, y), axis=1)
 df_result = pd.DataFrame(data=X)
 df_result.to_csv('./model_results/test_tsne.csv', index=False)
+'''

@@ -1,13 +1,18 @@
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
-from keras.applications.inception_v3 import preprocess_input
 import numpy as np
 import os
 from keras.models import load_model
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 import seaborn as sns
-import cv2
+from PIL import Image
+
+def preprocess_input(x):
+    x /= 255.
+    x -= 0.5
+    x *= 2.
+    return x
 
 def eval_model(model):
     y_pred = []
@@ -33,7 +38,7 @@ df.drop_duplicates(subset='im_name', inplace=True, keep=False)
 input_shape = (75, 75, 3)
 feat_shape = (16,)
 
-X_img = np.empty((df.shape[0], input_shape[0], input_shape[1], input_shape[2]), dtype=np.uint8)
+X_img = np.empty((df.shape[0], input_shape[0], input_shape[1], input_shape[2]), dtype=np.float32)
 X_feat = np.empty((df.shape[0], feat_shape[0]))
 
 data_path = os.path.join(os.getcwd(), 'pad')
@@ -41,9 +46,9 @@ data_path = os.path.join(os.getcwd(), 'pad')
 for i, (im_name, label) in enumerate(zip(df.im_name, df.label)):
     im_dir = os.path.join(data_path, class_map[label])
     im_path = os.path.join(im_dir, im_name)
-    padded = cv2.imread(im_path, -1)
-    padded = cv2.cvtColor(padded, cv2.COLOR_BGR2RGB)
-    X_img[i,] = preprocess_input(padded)
+    padded = Image.open(im_path)
+    padded = np.array(padded, dtype=np.uint8)
+    X_img[i,] = preprocess_input(np.array(padded, dtype=np.float32))
     _, im_name = os.path.split(im_path)
     X_feat[i,] = features[im_name]
 
@@ -56,7 +61,7 @@ y_pred = eval_model(model)
 
 d = {'y_true': df.label, 'y_pred': y_pred}
 df_results = pd.DataFrame(data=d)
-df_results.to_csv('./model_results/inception_v3.csv', index=False)
+df_results.to_csv('./model_results/test.csv', index=False)
 
 acc = str(round(accuracy_score(df.label, y_pred), 4))
 f1 = str(round(f1_score(df.label, y_pred, average='weighted'), 4))

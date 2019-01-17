@@ -4,3 +4,4 @@ models
 inception_v3_training
 inception_v3_validation
 test.py
+example_set

@@ -6,7 +6,7 @@ import pickle
 # uncomment mod_labels to build multi classification
 mod_labels = {}
 '''
-mod_labels = {'acartia': [0, 9]}
+mod_labels = {'acartia': [0, 9, 10]}
 '''
 class_map = {}
 im_names = []

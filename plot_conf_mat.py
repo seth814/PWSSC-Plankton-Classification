@@ -9,7 +9,7 @@ def plot_conf_mat(conf_mat):
     sns.heatmap(conf_mat, cmap='hot', vmin=0.0, vmax=1.0, square=True, xticklabels=False, yticklabels=False)
     plt.show()
 
-df = pd.read_csv('./model_results/inception_v3_drop_4.csv')
+df = pd.read_csv('./model_results/inception_v3_5k.csv')
 
 acc = str(round(accuracy_score(df.y_true, df.y_pred), 4))
 f1 = str(round(f1_score(df.y_true, df.y_pred, average='weighted'), 4))
