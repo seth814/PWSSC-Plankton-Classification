@@ -63,8 +63,8 @@ def get_multi_cls_model():
     x = GlobalAveragePooling2D()(x)
     x = Dropout(0.5)(x)
 
-    x = Dense(256, activation='relu')(x)
-    c1 = Dense(128-feat_shape[0], activation='relu')(x)
+    x = Dense(512, activation='relu')(x)
+    c1 = Dense(256-feat_shape[0], activation='relu')(x)
     c2 = Input(shape=feat_shape)
     c = Concatenate(axis=-1,)([c1, c2])
     x = Dense(64, activation='relu')(c)
@@ -93,7 +93,7 @@ def check_dirs(dirs):
 
 check_dirs(['logs', 'models'])
 
-with open('class_map.pickle', 'rb') as handle:
+with open('class_map.p', 'rb') as handle:
     class_map = pickle.load(handle)
 print(class_map)
 
@@ -129,10 +129,10 @@ labels = np.array(labels)
 
 X_train, X_val, y_train, y_val = train_test_split(paths, labels, test_size=0.1, random_state=0)
 
-checkpoint = ModelCheckpoint('./models/test.model', monitor='val_acc', verbose=1, mode='max',
+checkpoint = ModelCheckpoint('./models/test.model', monitor='val_f1', verbose=1, mode='max',
                              save_best_only=True, save_weights_only=False, period=1)
 
-reduceLROnPlato = ReduceLROnPlateau(monitor='val_loss', factor=0.5,
+reduceLROnPlato = ReduceLROnPlateau(monitor='val_f1', factor=0.5,
                                     patience=3, verbose=1, mode='min')
 
 tensorboard = TrainValTensorBoard(write_graph=False)
