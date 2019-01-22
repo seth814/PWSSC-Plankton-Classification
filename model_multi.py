@@ -1,6 +1,6 @@
 from keras.applications import InceptionV3
 from keras.models import Model
-from keras.layers import Input, Dropout, Dense
+from keras.layers import Input, Dropout, Dense, BatchNormalization
 from keras.layers import GlobalAveragePooling2D, Concatenate
 import tensorflow as tf
 import pandas as pd
@@ -62,12 +62,14 @@ def get_multi_cls_model():
     x = pretrain_model(input_image)
     x = GlobalAveragePooling2D()(x)
     x = Dropout(0.5)(x)
-
     x = Dense(512, activation='relu')(x)
+    x = BatchNormalization()(x)
     c1 = Dense(256-feat_shape[0], activation='relu')(x)
     c2 = Input(shape=feat_shape)
     c = Concatenate(axis=-1,)([c1, c2])
-    x = Dense(64, activation='relu')(c)
+    x = BatchNormalization()(c)
+    x = Dense(64, activation='relu')(x)
+    x = BatchNormalization()(x)
     output = Dense(n_classes, activation='sigmoid')(x)
 
     model = Model([input_image, c2], output)
@@ -129,7 +131,7 @@ labels = np.array(labels)
 
 X_train, X_val, y_train, y_val = train_test_split(paths, labels, test_size=0.1, random_state=0)
 
-checkpoint = ModelCheckpoint('./models/test.model', monitor='val_f1', verbose=1, mode='max',
+checkpoint = ModelCheckpoint('./models/inception_v3_multi.model', monitor='val_f1', verbose=1, mode='max',
                              save_best_only=True, save_weights_only=False, period=1)
 
 reduceLROnPlato = ReduceLROnPlateau(monitor='val_f1', factor=0.5,

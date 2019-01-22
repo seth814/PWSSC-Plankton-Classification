@@ -1,6 +1,6 @@
 from keras.applications import InceptionV3
 from keras.models import Model, load_model
-from keras.layers import Input, Dropout, Dense
+from keras.layers import Input, Dropout, Dense, BatchNormalization
 from keras.layers import GlobalAveragePooling2D, Concatenate
 from keras.utils import to_categorical
 import tensorflow as tf
@@ -60,11 +60,14 @@ def get_single_cls_model():
     x = pretrain_model(input_image)
     x = GlobalAveragePooling2D()(x)
     x = Dropout(0.5)(x)
-    x = Dense(512)(x)
+    x = Dense(512, activation='relu')(x)
+    x = BatchNormalization()(x)
     c1 = Dense(256-feat_shape[0], activation='relu')(x)
     c2 = Input(shape=feat_shape)
     c = Concatenate(axis=-1,)([c1, c2])
-    x = Dense(64, activation='relu')(c)
+    x = BatchNormalization()(c)
+    x = Dense(64, activation='relu')(x)
+    x = BatchNormalization()(x)
     output = Dense(n_classes, activation='softmax')(x)
 
     model = Model([input_image, c2], output)
