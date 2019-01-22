@@ -27,6 +27,10 @@ def predict_image(im_path):
     y_hat = model.predict([x_img, x_feat])
     label_hat = class_map[np.argmax(y_hat)]
     save_image(im_path, y_hat)
+    y_hat = [str(x) for x in y_hat.flatten()]
+    results.append(im_path)
+    results.append(label_hat)
+    results.extend(y_hat)
     return [im_path, label_hat, y_hat]
 
 def save_image(im_path, y_hat):
@@ -46,10 +50,10 @@ def check_dirs(wd, dirs):
         if os.path.isdir(exists) is False:
             os.mkdir(exists)
 
-with open('class_map.pickle', 'rb') as handle:
+with open('class_map.p', 'rb') as handle:
     class_map = pickle.load(handle)
 
-with open('normalizer.pickle', 'rb') as handle:
+with open('normalizer.p', 'rb') as handle:
     mms = pickle.load(handle)
 
 prob_threshold = 0.0
@@ -66,7 +70,9 @@ check_dirs(example_path / 'Classified' / 'Low', list(class_map.values()))
 model = load_model(model_path)
 
 frames = []
-columns = ['path', 'predicted_label', 'probability']
+columns = ['path', 'predicted_label']
+for v in list(class_map.values()):
+    columns.append(v)
 
 dirs = next(os.walk(example_path.as_posix()))[1]
 dirs.remove('Classified')
