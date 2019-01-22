@@ -101,7 +101,7 @@ y = y.reshape((y.shape[0], 1))
 y_hot = np.array(y_hot)
 y_hot = y_hot.reshape(y_hot.shape[0], y_hot.shape[2])
 
-model = load_model('./models/test.model', custom_objects={'f1': f1})
+model = load_model('./models/inception_v3_multi.model', custom_objects={'f1': f1})
 y_prob, hot_encoded = eval_model(model, prob_threshold=0.95)
 (index, y_pred) = hot_encoded
 

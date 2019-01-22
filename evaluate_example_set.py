@@ -28,10 +28,11 @@ def predict_image(im_path):
     label_hat = class_map[np.argmax(y_hat)]
     save_image(im_path, y_hat)
     y_hat = [str(x) for x in y_hat.flatten()]
+    results = []
     results.append(im_path)
     results.append(label_hat)
     results.extend(y_hat)
-    return [im_path, label_hat, y_hat]
+    return results
 
 def save_image(im_path, y_hat):
     _, im_name = os.path.split(im_path)

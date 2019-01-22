@@ -69,7 +69,7 @@ with open('normalizer.p', 'rb') as handle:
 prob_threshold = 0.0
 
 path = Path(os.getcwd())
-model_path = path / 'models' / 'test.model'
+model_path = path / 'models' / 'inception_v3_multi.model'
 example_path = path / 'example_set'
 print(class_map)
 
