@@ -10,9 +10,9 @@ This file will iterate through every image in the data directory.
 It builds padded and features so a segmentation object does not need to be built during modeling.
 
 creates:
- - features.pickle: a dictionary where im_name is keys and feats are values ( O(1) time lookup )
+ - features.p: a dictionary where im_name is keys and feats are values ( O(1) time lookup )
  - extracted_features.csv: a csv file of features
- - normalizer.pickle: a MinMaxScaler object to normalize features at run time
+ - normalizer.p: a MinMaxScaler object to normalize features at run time
  - abc.png: an image padded after segmenation
 
 extracted_features.csv is also built here so run this if you change the data.
@@ -28,6 +28,10 @@ df.drop_duplicates(subset='im_name', inplace=True, keep=False)
 
 feats = {}
 feat_list = []
+
+exists = os.path.join(os.getcwd(), 'pad')
+if os.path.isdir(exists) is False:
+    os.mkdir(exists)
 
 data_path = os.path.join(os.getcwd(), 'data')
 pad_path = os.path.join(os.getcwd(), 'pad')
