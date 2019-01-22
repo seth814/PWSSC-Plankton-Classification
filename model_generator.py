@@ -82,7 +82,7 @@ def check_dirs(dirs):
 
 check_dirs(['logs', 'models'])
 
-with open('class_map.pickle', 'rb') as handle:
+with open('class_map.p', 'rb') as handle:
     class_map = pickle.load(handle)
 
 df = pd.read_csv('plankton.csv')

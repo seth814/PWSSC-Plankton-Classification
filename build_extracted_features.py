@@ -20,7 +20,7 @@ The normalizer will also be built using extracted features.
 Duplicate image names will be removed.
 '''
 
-with open('class_map.pickle', 'rb') as handle:
+with open('class_map.p', 'rb') as handle:
     class_map = pickle.load(handle)
 
 df = pd.read_csv('plankton.csv')
@@ -51,7 +51,7 @@ for c in classes:
         feats[im_name] = plankton.get_features()
         feat_list.append(plankton.get_features())
 
-with open('features.pickle', 'wb') as handle:
+with open('features.p', 'wb') as handle:
     pickle.dump(feats, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 df_feats = pd.DataFrame(data=feat_list, columns=plankton.get_columns())
@@ -60,5 +60,5 @@ df_feats.to_csv('extracted_features.csv', index=False)
 mms = MinMaxScaler()
 mms.fit(df_feats.values)
 
-with open('normalizer.pickle', 'wb') as handle:
+with open('normalizer.p', 'wb') as handle:
     pickle.dump(mms, handle, protocol=pickle.HIGHEST_PROTOCOL)

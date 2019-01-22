@@ -6,7 +6,13 @@ import pickle
 # uncomment mod_labels to build multi classification
 mod_labels = {}
 '''
-mod_labels = {'acartia': [0, 9, 10]}
+mod_labels = {'acartia': [0, 9],
+              'calanus': [5, 9],
+              'metridia': [17, 9],
+              'neocalanus': [19, 9],
+              'oithona': [21, 9],
+              'paraeuchaeta': [22, 9],
+              'pseudocalanus': [27, 9]}
 '''
 class_map = {}
 im_names = []
@@ -35,5 +41,5 @@ df = pd.DataFrame(data=d)
 
 df.to_csv('plankton.csv', index=False)
 
-with open('class_map.pickle', 'wb') as handle:
+with open('class_map.p', 'wb') as handle:
     pickle.dump(class_map, handle, protocol=pickle.HIGHEST_PROTOCOL)

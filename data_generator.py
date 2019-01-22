@@ -17,10 +17,10 @@ def preprocess_input(x):
     x *= 2.
     return x
 
-with open('features.pickle', 'rb') as handle:
+with open('features.p', 'rb') as handle:
     features = pickle.load(handle)
 
-with open('normalizer.pickle', 'rb') as handle:
+with open('normalizer.p', 'rb') as handle:
     mms = pickle.load(handle)
 
 class DataGenerator(keras.utils.Sequence):

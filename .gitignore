@@ -7,9 +7,10 @@ test.py
 example_set
 vanilla_generator.py
 vanilla_inception.py
-class_map.pickle
+class_map.p
 extracted_features.csv
-features.pickle
-normalizer.pickle
+features.p
+normalizer.p
 plankton.csv
 pad
+repeats.p

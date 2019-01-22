@@ -23,13 +23,13 @@ def eval_model(model):
         y_pred.append(np.argmax(y_hat))
     return y_pred
 
-with open('class_map.pickle', 'rb') as handle:
+with open('class_map.p', 'rb') as handle:
     class_map = pickle.load(handle)
 
-with open('normalizer.pickle', 'rb') as handle:
+with open('normalizer.p', 'rb') as handle:
     mms = pickle.load(handle)
 
-with open('features.pickle', 'rb') as handle:
+with open('features.p', 'rb') as handle:
     features = pickle.load(handle)
 
 df = pd.read_csv('plankton.csv')

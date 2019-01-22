@@ -50,13 +50,13 @@ def encode_labels(labels):
     return encoded
 
 
-with open('class_map.pickle', 'rb') as handle:
+with open('class_map.p', 'rb') as handle:
     class_map = pickle.load(handle)
 
-with open('normalizer.pickle', 'rb') as handle:
+with open('normalizer.p', 'rb') as handle:
     mms = pickle.load(handle)
 
-with open('features.pickle', 'rb') as handle:
+with open('features.p', 'rb') as handle:
     features = pickle.load(handle)
 
 df = pd.read_csv('plankton.csv')
@@ -111,7 +111,7 @@ print('Classified {}% of the data using a threshold of 95%'.format(percent))
 print('Weighted F1-Score: {:4.4f}'.format(f1))
 
 df_result = pd.DataFrame(y_prob)
-df_result.to_csv('./model_results/test_prob.csv', index=False)
+df_result.to_csv('./model_results/multi_prob.csv', index=False)
 
 # performs tsne decomposition (warning: tsne compares elements quadratically)
 # comment out if data is too large
